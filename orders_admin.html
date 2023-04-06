@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="topnav">
+      <a class="homeButton" href="home.html">Home</a>
+      <!-- Search bar -->
+      <form class="search" action="search.html" method="get">
+        <input type="text" name="search" id="search" placeholder="Search for a book..." />
+        <input type="submit" value="Search" />
+      </form>
+      <a class="logoutButton" href="orders.html">Orders</a>
+      <a class="logoutButton" href="login.html">Logout</a>
+    </div>
+    <div class="container">
+      <h1>Your Orders</h1>
+      <div class="content-sm">
+        <img style="object-fit: contain" src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+        <div class="card curved full-width no-margin-top">
+          <div class="card-background-light"><span>Order Placed: {{Order.timestamp}}</span></div>
+          <div class="card-background-dark"><span>Delivery Address: {{Order.address}}</span></div>
+          <div class="card-background-light"><span>Payment Information: {{Order.payment}}</span></div>
+          <div class="card-background-dark"><span>Order ID: {{Order.id}}</span></div>
+          <div class="card-background-light"><span>Order Total: {{Order.cost}}</span></div>
+          <div class="card-background-dark"><span>Order Status: {{Order.status}}</span></div>
+          <div class="card-background-light collapsible">Order Details</div>
+          <div class="collapsible-content">
+            <p>16/05/2019 15:30 | Ordered</p>
+            <p>16/06/2019 7:30| Out for delivery</p>
+            <p>16/06/2019 17:30 | Delivery</p>
+          </div>
+        </div>
+      </div>
+      <div class="content-sm">
+        <img style="object-fit: contain" src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+        <div class="card curved full-width no-margin-top">
+          <div class="card-background-light"><span>Order Placed: {{Order.timestamp}}</span></div>
+          <div class="card-background-dark"><span>Delivery Address: {{Order.address}}</span></div>
+          <div class="card-background-light"><span>Payment Information: {{Order.payment}}</span></div>
+          <div class="card-background-dark"><span>Order ID: {{Order.id}}</span></div>
+          <div class="card-background-light"><span>Order Total: {{Order.cost}}</span></div>
+          <div class="card-background-dark"><span>Order Status: {{Order.status}}</span></div>
+          <div class="card-background-light collapsible">Order Details</div>
+          <div class="collapsible-content">
+            <p>16/05/2019 15:30 | Ordered</p>
+            <p>16/06/2019 7:30| Out for delivery</p>
+            <p>16/06/2019 17:30 | Delivery</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    var coll = document.getElementsByClassName('collapsible');
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener('click', function () {
+        this.classList.toggle('active');
+        var content = this.nextElementSibling;
+        if (content.style.display === 'block') {
+          content.style.display = 'none';
+        } else {
+          content.style.display = 'block';
+        }
+      });
+    }
+  </script>
+</html>

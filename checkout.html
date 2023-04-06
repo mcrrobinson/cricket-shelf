@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .address,
+    .payment {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @media (min-width: 992px) {
+      .container {
+        width: 970px;
+      }
+    }
+
+    .container {
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topnav">
+    <a class="homeButton" href="/">Home</a>
+    <!-- Search bar -->
+    <form class="search" action="search" method="get">
+      <input type="text" name="search" id="search" placeholder="Search for a book..." />
+      <input type="submit" value="Search" />
+    </form>
+    <a href="basket">Checkout</a>
+    <a href="orders">Orders</a>
+    <a class="logoutButton" href="login">Logout</a>
+  </div>
+  <div class="container">
+    <div class="address card">
+      <div style="margin:20px">
+        <h3>Address</h1>
+      </div>
+      <div style="margin: calc(20px + 1em);" id="addresses"></div>
+      <div>
+        <button id="changeAddressButton" disabled>Change</button>
+        <button id="saveAddressButton" style="display: none;">Save</button>
+        <button style="display: none;" id="closeAddressButton">Close</button>
+      </div>
+    </div>
+    <div class="payment card">
+      <div style="margin:20px">
+        <h3>Payment</h1>
+      </div>
+      <div style="margin: calc(20px + 1em);" id="payments"></div>
+      <div id="paymentButtons">
+        <button id="changePaymentButton" disabled>Change</button>
+        <button id="savePaymentButton" style="display: none;">Save</button>
+        <button style="display: none;" id="closePaymentButton">Close</button>
+      </div>
+    </div>
+    <input id="placeOrderButton" type="submit" value="Place Order" disabled/>
+  </div>
+</body>
+<script src="checkout.js"></script>
+</html>

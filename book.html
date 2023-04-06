@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Page</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="topnav">
+      <a class="homeButton" href="home.html">Home</a>
+      <!-- Search bar -->
+      <form class="search" action="search.html" method="get">
+        <input type="text" name="search" id="search" placeholder="Search for a book..." />
+        <input type="submit" value="Search" />
+      </form>
+      <a class="logoutButton" href="orders.html">Orders</a>
+      <a class="logoutButton" href="login.html">Logout</a>
+    </div>
+    <div class="container">
+      <div class="content-md">
+        <div class="card flex">
+          <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+          <div class="book-info">
+            <div class="info">
+              <h1>{{Book.name}}</h1>
+              <p>Author: {{author name}}</p>
+              <p>Genre: {{genre}}</p>
+              <p>Rating: {{rating}}</p>
+            </div>
+            <div class="btn-holder">
+              <button class="btn">Add to cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h1>Related books</h1>
+      <div class="related-books">
+        <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+        <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+        <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+        <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+        <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+        <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+      </div>
+    </div>
+  </body>
+</html>
