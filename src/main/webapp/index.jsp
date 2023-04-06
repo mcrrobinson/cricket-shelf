@@ -1,0 +1,82 @@
+<%-- 
+    Document   : index
+    Created on : 09-Mar-2023, 15:47:17
+    Author     : Squash
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql"%>
+<!DOCTYPE html>
+
+<!-- Anything that doesn't require rendering goes here, anything that does 
+goes in the WEB-INF/view folder. WEB-INF/view/checkout.jsp wont be accessible 
+to the browser -->
+<html>
+    <head>
+    </head>
+    <body>
+        <div id="main">
+            <div class="topnav">
+                <a class="homeButton" href="index.jsp">Home</a>
+                <!-- Search bar -->
+                <form class="search" action="search" method="get">
+                    <input type="text" name="search" id="search" placeholder="Search for a book..." />
+                    <input type="submit" value="Search" />
+                </form>
+                <a href="basket">Checkout</a>
+                <a href="orders">Orders</a>
+                <a class="logoutButton" href="login">Logout</a>
+            </div>
+            <div class="container">
+                <h1>Home Page</h1>
+
+                <div id="content" class="content-md"></div>
+            </div>
+        </div>
+    </body>
+    <script>
+        var content = document.getElementById("content");
+        
+    fetch('/cricket-store/api/recently-viewed').then(res => res.json()).then(book => {
+        var card = document.createElement("div");
+        card.classList = "card padding-sm align-center margin20";
+        
+        var title = document.createElement("h1");
+        title.innerText = "Recently Viewed";
+        
+        var link = document.createElement("a");
+        link.href = "book?id=" + book.bookId;
+        
+        var image = document.createElement("img");
+        image.src = 'img/' + book.thumbnail + '.jpg';
+        
+        link.appendChild(image);
+        
+        card.appendChild(title);
+        card.appendChild(link);
+        content.appendChild(card);
+    });
+    fetch('/cricket-store/api/recently-added').then(res => res.json()).then(book => {
+        console.log(book);
+        var card = document.createElement("div");
+        card.classList = "card padding-sm align-center margin20";
+        
+        var title = document.createElement("h1");
+        title.innerText = "Recently Viewed";
+        
+        var link = document.createElement("a");
+        link.href = "book?id=" + book.bookId;
+        
+        var image = document.createElement("img");
+        image.src = 'img/' + book.thumbnail + '.jpg';
+        
+        link.appendChild(image);
+        
+        card.appendChild(title);
+        card.appendChild(link);
+        content.appendChild(card);
+    });
+    
+    </script>
+</html>
