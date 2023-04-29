@@ -302,7 +302,7 @@
         
         var table = $('#example').DataTable({
             ajax: {
-                    url: '/cricket-store/api/orders/list',
+                    url: '/cricket-shelf/api/orders/list',
                     dataSrc: ''
                 },
             processing: true,
@@ -364,7 +364,7 @@
         });
         
         function format(d) {
-            return fetch("/cricket-store/api/orders/product?id=" + d.orderId).then((res) => res.json());
+            return fetch("/cricket-shelf/api/orders/product?id=" + d.orderId).then((res) => res.json());
         }
         
         // Add event listener for opening and closing details
@@ -418,7 +418,7 @@
                         console.log(item);
                         let cell_title = document.createElement('td');
                         let cell_title_link = document.createElement('a');
-                        cell_title_link.href = '/cricket-store/book?id=' + item.books.bookId;
+                        cell_title_link.href = '/cricket-shelf/book?id=' + item.books.bookId;
                         cell_title_link.innerText = item.books.title;
                         cell_title.appendChild(cell_title_link);
                         row.appendChild(cell_title);

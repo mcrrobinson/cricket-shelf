@@ -5,17 +5,16 @@ import entity.BasketHasBook;
 import entity.Genres;
 import entity.OrderHasBook;
 import entity.Users;
-import java.io.Serializable;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.7.7.v20200504-rNA", date="2023-04-06T21:14:17")
+@Generated(value="EclipseLink-2.7.7.v20200504-rNA", date="2023-04-28T16:16:45")
 @StaticMetamodel(Books.class)
 public class Books_ { 
 
-    public static volatile SingularAttribute<Books, Serializable> thumbnail;
+    public static volatile SingularAttribute<Books, String> thumbnail;
     public static volatile SingularAttribute<Books, Integer> publishYear;
     public static volatile SingularAttribute<Books, Double> salesPrice;
     public static volatile SingularAttribute<Books, String> edition;

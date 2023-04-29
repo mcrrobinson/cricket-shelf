@@ -31,7 +31,7 @@
                     <div style="min-width:220px;max-width:220px;" style="margin-bottom:20px;" class="card">
                         <a href="book?id=${book.bookId}">
                             <p>${book.title}</p>
-                            <img style="width:220px;height:360px;" src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+                            <img style="width:220px;height:360px;" src="/cricket-shelf/img/${book.thumbnail}.jpg" alt="" />
                             <%--<img src="${book.thumbnail}" alt="" />--%>
                         </a>
                     </div>

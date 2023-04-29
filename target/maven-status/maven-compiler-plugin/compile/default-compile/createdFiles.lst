@@ -28,8 +28,10 @@ entity\Genres.class
 entity\OrderHasBook.class
 session\GenresFacade.class
 entity\Orders_.class
+controller\AddBookClass.class
 entity\Addresses_.class
 session\UsersFacade.class
+controller\Address.class
 entity\OrderHasBookPK.class
 entity\Genres_.class
 session\BooksFacade.class

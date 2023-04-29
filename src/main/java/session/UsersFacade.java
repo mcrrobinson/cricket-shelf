@@ -5,10 +5,13 @@
  */
 package session;
 
+import entity.Books;
 import entity.Users;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -23,6 +26,19 @@ public class UsersFacade extends AbstractFacade<Users> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+    
+//    public List<Users> findByEmailAndPassword(String title){
+//        Query query = em.createNamedQuery("Users.findByEmailAndPassword");
+//        query.setParameter("emailAddress", title);
+//        query.setParameter("password", title);
+//        return query.getResultList();
+//    }
+    
+    public List<Users> findByEmailAddress(String title){
+        Query query = em.createNamedQuery("Users.findByEmailAddress");
+        query.setParameter("emailAddress", title);
+        return query.getResultList();
     }
 
     public UsersFacade() {

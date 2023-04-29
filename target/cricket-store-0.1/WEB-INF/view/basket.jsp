@@ -41,7 +41,7 @@
                 <tbody>
                 </tbody>
             </table>
-            <form action="/cricket-store/checkout">
+            <form action="/cricket-shelf/checkout">
                 <input id="checkoutButton" type="submit" value="Checkout" disabled/>
             </form>
         </div>
@@ -49,7 +49,7 @@
     <script>
         var table = $('#example').DataTable({
             ajax: {
-                    url: '/cricket-store/api/cart/list',
+                    url: '/cricket-shelf/api/cart/list',
                     dataSrc: function(data) {
                         console.log(data);
                         if(data.length !== 0){

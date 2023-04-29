@@ -54,18 +54,16 @@
             </div>
 
             <h1>Related books</h1>
-            <div class="related-books">
-                <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
-                <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
-                <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
-                <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
-                <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
-                <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+            <div id = "relatedBooks" class="related-books">
             </div>
         </div>
     </body>
     <script>
-        fetch('/cricket-store/api/recently-viewed', {
+        var addToCartButton = document.getElementById("addToCartButton");
+        var quantityInput = document.getElementById("quantity");
+        var relatedBooks = document.getElementById("relatedBooks");
+        
+        fetch('/cricket-shelf/api/recently-viewed/', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -74,11 +72,26 @@
               bookId: ${book.bookId}
             })
         });
-            
-        var addToCartButton = document.getElementById("addToCartButton");
-        var quantityInput = document.getElementById("quantity");
+        
+        fetch('/cricket-shelf/api/related-books?id=' + ${book.bookId}, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((results) => results.json()).then((data) => {
+          data.forEach(element => {
+              console.log(element);
+              let link = document.createElement("a")
+              let image = document.createElement("img");
+              image.src = '/cricket-shelf/img/' + element.thumbnail + '.jpg';
+              link.href = '/cricket-shelf/book?id=' + element.bookId;
+              link.appendChild(image);
+              relatedBooks.appendChild(link);
+          });
+        });
+        
         addToCartButton.addEventListener('click', function(){
-            fetch('/cricket-store/api/cart/add', {
+            fetch('/cricket-shelf/api/cart/add', {
                 method: 'POST',
                 redirect: 'follow',
                 headers: {

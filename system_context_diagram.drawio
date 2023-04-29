@@ -1,0 +1,54 @@
+<mxfile host="Electron" modified="2023-04-29T13:02:50.907Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.1 Chrome/112.0.5615.87 Electron/24.1.2 Safari/537.36" etag="orDUDVGqJqLsA62aJt3v" version="21.2.1" type="device">
+  <diagram name="Page-1" id="Ef478zUTyeSAHnLoCPj3">
+    <mxGraphModel dx="1098" dy="838" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2UQT7n8AxEo1hL1Zl4NZ-1" value="" style="group;rounded=0;labelBackgroundColor=none;fillColor=none;fontColor=#ffffff;align=center;html=1;" vertex="1" connectable="0" parent="1">
+          <mxGeometry width="160" height="510" as="geometry" />
+          <C4Person as="c4" />
+        </mxCell>
+        <object label="&lt;b&gt;Cricket Shelf Customer&lt;/b&gt;&lt;div&gt;[Person]&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;A customer of the company.&lt;/div&gt;" placeholders="1" c4Name="name" c4Type="body" c4Description="Description" id="2UQT7n8AxEo1hL1Zl4NZ-2">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#08427b;fontColor=#ffffff;align=center;arcSize=33;strokeColor=3c7fc0;" vertex="1" parent="2UQT7n8AxEo1hL1Zl4NZ-1">
+            <mxGeometry y="70" width="160" height="110" as="geometry" />
+            <C4Person as="c4" />
+          </mxCell>
+        </object>
+        <mxCell id="2UQT7n8AxEo1hL1Zl4NZ-3" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;rounded=0;labelBackgroundColor=none;fillColor=#08427b;fontSize=12;fontColor=#ffffff;align=center;strokeColor=3c7fc0;" vertex="1" parent="2UQT7n8AxEo1hL1Zl4NZ-1">
+          <mxGeometry x="40" width="80" height="80" as="geometry" />
+          <C4Person as="c4" />
+        </mxCell>
+        <object label="&lt;b&gt;Cricket Shelf System&lt;/b&gt;&lt;div&gt;[Software System]&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Allows customers connect to the site, browse books, purchase, etc.&lt;/div&gt;" placeholders="1" c4Name="name" c4Type="SoftwareSystem" c4Description="Description" id="2UQT7n8AxEo1hL1Zl4NZ-4">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#1168bd;fontColor=#ffffff;align=center;arcSize=7;strokeColor=#0f5eaa;" vertex="1" parent="2UQT7n8AxEo1hL1Zl4NZ-1">
+            <mxGeometry y="240" width="160" height="110" as="geometry" />
+            <C4SoftwareSystem as="c4" />
+          </mxCell>
+        </object>
+        <object label="&lt;div style=&quot;text-align: left&quot;&gt;&lt;div style=&quot;text-align: center&quot;&gt;&lt;b&gt;Views pages, makes&amp;nbsp;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;text-align: center&quot;&gt;&lt;b&gt;orders using&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" c4Type="Relationship" c4Description="Description" c4Technology="technology" id="2UQT7n8AxEo1hL1Zl4NZ-5">
+          <mxCell style="edgeStyle=none;rounded=0;html=1;entryX=0.5;entryY=0;jettySize=auto;orthogonalLoop=1;strokeColor=#707070;strokeWidth=2;fontColor=#707070;jumpStyle=none;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" edge="1" parent="2UQT7n8AxEo1hL1Zl4NZ-1" source="2UQT7n8AxEo1hL1Zl4NZ-2" target="2UQT7n8AxEo1hL1Zl4NZ-4">
+            <mxGeometry width="160" relative="1" as="geometry">
+              <mxPoint x="330" y="300" as="sourcePoint" />
+              <mxPoint x="490" y="300" as="targetPoint" />
+            </mxGeometry>
+            <C4Relationship as="c4" />
+          </mxCell>
+        </object>
+        <object label="&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;b&gt;Mainframe&lt;br&gt;&lt;/b&gt;[Software System]&lt;/span&gt;&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Stores user and system information.&lt;/div&gt;" placeholders="1" c4Name="name" c4Type="SoftwareSystemDependency" c4Description="Description" id="2UQT7n8AxEo1hL1Zl4NZ-6">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#999999;fontColor=#ffffff;align=center;arcSize=7;strokeColor=#8a8a8a;" vertex="1" parent="2UQT7n8AxEo1hL1Zl4NZ-1">
+            <mxGeometry y="400" width="160" height="110" as="geometry" />
+            <C4SoftwareSystemDependency as="c4" />
+          </mxCell>
+        </object>
+        <object label="&lt;div style=&quot;text-align: left&quot;&gt;&lt;div style=&quot;text-align: center&quot;&gt;&lt;b&gt;Gets user and system&amp;nbsp;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;text-align: center&quot;&gt;&lt;b&gt;information using&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" c4Type="Relationship" c4Description="Description" c4Technology="technology" id="2UQT7n8AxEo1hL1Zl4NZ-14">
+          <mxCell style="edgeStyle=none;rounded=0;html=1;entryX=0.5;entryY=0;jettySize=auto;orthogonalLoop=1;strokeColor=#707070;strokeWidth=2;fontColor=#707070;jumpStyle=none;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" edge="1" parent="2UQT7n8AxEo1hL1Zl4NZ-1" source="2UQT7n8AxEo1hL1Zl4NZ-4" target="2UQT7n8AxEo1hL1Zl4NZ-6">
+            <mxGeometry width="160" relative="1" as="geometry">
+              <mxPoint x="90" y="190" as="sourcePoint" />
+              <mxPoint x="90" y="250" as="targetPoint" />
+            </mxGeometry>
+            <C4Relationship as="c4" />
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -36,7 +36,7 @@
 
 <body>
   <div class="topnav">
-    <a class="homeButton" href="/">Home</a>
+    <a class="homeButton" href="/cricket-shelf">Home</a>
     <!-- Search bar -->
     <form class="search" action="search" method="get">
       <input type="text" name="search" id="search" placeholder="Search for a book..." />
@@ -236,7 +236,7 @@
     let submitButton = document.createElement('button');
     submitButton.innerText = 'Add';
     submitButton.addEventListener('click', () => {
-        fetch('/cricket-store/api/address/add', {
+        fetch('/cricket-shelf/api/address/add', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -360,7 +360,7 @@ class Payment {
     let submitButton = document.createElement('button');
     submitButton.innerText = 'Add';
     submitButton.addEventListener('click', () => {
-        fetch('/cricket-store/api/card/add', {
+        fetch('/cricket-shelf/api/card/add', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -432,7 +432,7 @@ class Payment {
 }
 
 // Either turn into module, or use dirty trick... or create class...
-fetch('/cricket-store/api/addresses')
+fetch('/cricket-shelf/api/addresses')
   .then((res) => res.json())
   .then((addressData) => {
     // Address content div
@@ -459,7 +459,7 @@ fetch('/cricket-store/api/addresses')
       address.setAddress();
     }
 
-    fetch('/cricket-store/api/cards')
+    fetch('/cricket-shelf/api/cards')
       .then((res) => res.json())
       .then((paymentData) => {
         // Payment content div
@@ -494,7 +494,7 @@ fetch('/cricket-store/api/addresses')
 
         // Upon clicking place order, send a POST request to the server
         placeOrderButton.addEventListener('click', () => {
-          fetch('/cricket-store/api/order/place', {
+          fetch('/cricket-shelf/api/order/place', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

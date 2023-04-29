@@ -23,7 +23,7 @@ import static java.util.UUID.randomUUID;
 public class PopulateTable {
     public static void main(String args[]) throws Exception {
         DriverManager.registerDriver(new org.apache.derby.jdbc.ClientDriver());
-        String mysqlUrl = "jdbc:derby://localhost:1527/cricketbooks";
+        String mysqlUrl = "jdbc:derby://localhost:1527/cricketstore";
         Connection con = DriverManager.getConnection(mysqlUrl, "root", "password");
         PreparedStatement pstmt = con.prepareStatement(
                 "insert into BOOKS (title, edition, sales_price, publish_year, thumbnail) VALUES " +

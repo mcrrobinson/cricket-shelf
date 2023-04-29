@@ -26,7 +26,7 @@ to the browser -->
                 </form>
                 <a href="basket">Checkout</a>
                 <a href="orders">Orders</a>
-                <a class="logoutButton" href="login">Logout</a>
+                <a class="logoutButton" href="/cricket-shelf/api/logout">Logout</a>
             </div>
             <div class="container">
                 <h1>Home Page</h1>
@@ -38,7 +38,9 @@ to the browser -->
     <script>
         var content = document.getElementById("content");
         
-    fetch('/cricket-store/api/recently-viewed').then(res => res.json()).then(book => {
+    fetch('/cricket-shelf/api/recently-viewed').then(res => res.json()).then(book => {
+        if(book == null) return;
+        
         var card = document.createElement("div");
         card.classList = "card padding-sm align-center margin20";
         
@@ -57,13 +59,14 @@ to the browser -->
         card.appendChild(link);
         content.appendChild(card);
     });
-    fetch('/cricket-store/api/recently-added').then(res => res.json()).then(book => {
-        console.log(book);
+    fetch('/cricket-shelf/api/recently-added').then(res => res.json()).then(book => {
+        if(book == null) return;
+        
         var card = document.createElement("div");
         card.classList = "card padding-sm align-center margin20";
         
         var title = document.createElement("h1");
-        title.innerText = "Recently Viewed";
+        title.innerText = "Recently Added";
         
         var link = document.createElement("a");
         link.href = "book?id=" + book.bookId;
