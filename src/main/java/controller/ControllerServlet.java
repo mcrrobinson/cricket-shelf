@@ -56,17 +56,12 @@ import session.UsersFacade;
     "/api/orders/product",
     "/api/addresses",
     "/api/address/add",
+    "/api/search",
     "/api/cards",
     "/api/card/add",
     "/api/recently-viewed",
     "/api/recently-added",
-    "/api/related-books",
-    "/checkout", 
-    "/book", 
-    "/orders", 
-    "/search", 
-    "/basket",
-    "/"})
+    "/api/related-books"})
 public class ControllerServlet extends HttpServlet {
     private ServletContext ctx;
     
@@ -94,6 +89,10 @@ public class ControllerServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         this.ctx = config.getServletContext();
+    }
+    
+    public boolean getAdminStatus(){
+        return true;
     }
     
     private double getTotalFromBookCollection(Collection<BasketHasBook> bookCollection){
@@ -128,21 +127,21 @@ public class ControllerServlet extends HttpServlet {
             return;
         }
         
-//        Object id_attribute = session.getAttribute("id");
-//        if(id_attribute==null){
-//            response.sendRedirect("/cricket-shelf/login");
-//            return;
-//        } else {
-//            try {
-//                id = (int)id_attribute;
-//            } catch (ClassCastException e) {
-//                System.out.println("User session ID was set with a non-int value, resetting session...");
-//                session.invalidate();
-//                response.sendRedirect("/cricket-shelf/login");
-//                return;
-//            }
-//        }
-        id = 107;
+        Object id_attribute = session.getAttribute("id");
+        if(id_attribute==null){
+            response.sendRedirect("/cricket-shelf/login");
+            return;
+        } else {
+            try {
+                id = (int)id_attribute;
+            } catch (ClassCastException e) {
+                System.out.println("User session ID was set with a non-int value, resetting session...");
+                session.invalidate();
+                response.sendRedirect("/cricket-shelf/login");
+                return;
+            }
+        }
+//        id = 107;
         
         
         switch(userPath){
@@ -180,13 +179,17 @@ public class ControllerServlet extends HttpServlet {
             case "/api/cart/list":
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
-                
                 response.getWriter().write(new ObjectMapper().writeValueAsString(usersFacade.find(id).getBasketHasBookCollection().toArray()));
                 break;
             case "/api/orders/list":
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(usersFacade.find(id).getOrdersCollection().toArray()));
+                break;
+            case "/api/orders/list-all":
+                response.setContentType("text/json");
+                response.setHeader("Cache-Control", "no-cache");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(ordersFacade.findAll().toArray()));
                 break;
             case "/api/orders/product":
                 Integer orderIdAsInt;
@@ -227,7 +230,6 @@ public class ControllerServlet extends HttpServlet {
                 response.setHeader("Cache-Control", "no-cache");
                 try {
                     recentlyViewedBook = usersFacade.find(id).getRecentBookId();
-                    System.out.println(recentlyViewedBook);
                 } catch (java.lang.NullPointerException err){
                     System.out.println("User returned null pointer on recent book, they likely haven't viewed a book yet.");
                     response.getWriter().write("null");
@@ -249,37 +251,8 @@ public class ControllerServlet extends HttpServlet {
                 }
                 response.getWriter().write(new ObjectMapper().writeValueAsString(recentlyAddedBook));
                 break;
-            case "/book":
-                String singleBookId = request.getParameter("id");
-                
-                Books singleBook = booksFacade.find(Integer.parseInt(singleBookId));
-                ctx.setAttribute("book", singleBook);
-                
-                Collection<Authors> singleAuthorsCollection = singleBook.getAuthorsCollection();
-                ctx.setAttribute("authors", singleAuthorsCollection);
-
-                Collection<Genres> singleGenreCollection = singleBook.getGenresCollection();
-                ctx.setAttribute("genres", singleGenreCollection);
-                request.getRequestDispatcher("/WEB-INF/view/book.jsp").forward(request, response);
-                break;
-            case "/search":
-                String search = request.getParameter("search");                
-                List<Books> books = booksFacade.findLikeTitle(search);
-                ctx.setAttribute("books", books);
-                
-                request.getRequestDispatcher("/WEB-INF/view/search.jsp").forward(request, response);
-                break;
-            case "/index":
-                System.out.println("Not yet implemented...");
-                break;
             default:
-                // use RequestDispatcher to forward request internally
-                String url = "/WEB-INF/view" + userPath + ".jsp";
-                try {
-                    request.getRequestDispatcher(url).forward(request, response);
-                } catch (IOException | ServletException ex) {
-                    ex.printStackTrace();
-                }
+                System.out.println("Unrecognised call ...");
         }
     }
 
@@ -317,19 +290,25 @@ public class ControllerServlet extends HttpServlet {
             case "/api/cart/add":
                 String serialisedBookAdd = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                 AddBookClass deserialisedBook = new ObjectMapper().readValue(serialisedBookAdd, AddBookClass.class);
-                basketFacade.create(new BasketHasBook(new BasketHasBookPK(id, deserialisedBook.bookId), deserialisedBook.quantity));
-                System.out.println("added book... sucess");
                 
-                response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
-                response.sendRedirect("/cricket-shelf/");
+                BasketHasBookPK basketHasBookPk = new BasketHasBookPK(id, deserialisedBook.bookId);
+                basketFacade.create(new BasketHasBook(basketHasBookPk, deserialisedBook.quantity)); // Persist
+                
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                response.sendRedirect("/cricket-shelf");
                 break;
             case "/api/order/place":
                 System.out.println("starting...");
                 String serialisedPostBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                 OrderPlacePost orderBody = new ObjectMapper().readValue(serialisedPostBody, OrderPlacePost.class);
                 
-                Integer paymentUserId = cardsFacade.find(orderBody.paymentId).getUserId().getUserId();
-                Integer addressUserId = addressesFacade.find(orderBody.addressId).getUserId().getUserId();
+                
+                Cards paymentCard = cardsFacade.find(orderBody.paymentId);
+                Integer paymentUserId = paymentCard.getUserId().getUserId();
+
+                Addresses addressPresented = addressesFacade.find(orderBody.addressId);
+                Integer addressUserId = addressPresented.getUserId().getUserId();
+                
                 if(paymentUserId != id || addressUserId != id){
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     break;
@@ -344,13 +323,11 @@ public class ControllerServlet extends HttpServlet {
                 order.setOrdered(new Date());
                 
                 // Why is this requesting an object, should be an integer?
-                order.setAddressId(addressesFacade.find(addressUserId));
-                order.setCardId(cardsFacade.find(paymentUserId));
+                order.setAddressId(addressPresented);
+                order.setCardId(paymentCard);
                 order.setUserId(usersFacade.find(id));
                 
-                Orders databaseOrder = ordersFacade.createReturnObject(order);
-                
-                System.out.println(databaseOrder.getOrderId());
+                Orders databaseOrder = ordersFacade.createReturnObject(order); // Custom Persist
                 
                 for(BasketHasBook book : basketBooks) {
                    
@@ -369,20 +346,54 @@ public class ControllerServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
                 response.sendRedirect("/cricket-shelf/");
                 break;
+            case "/api/order/status":
+                String serialisedStatusBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+                StatusPost statusBody = new ObjectMapper().readValue(serialisedStatusBody, StatusPost.class);
                 
+                Orders statusOrder = ordersFacade.find(statusBody.orderId);
+                if(id != statusOrder.getUserId().getUserId()){
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
+  
+                switch(statusBody.status){
+                    case 1:
+                        statusOrder.setOrdered(statusBody.timestamp);
+                        ordersFacade.edit(statusOrder); // Persist
+                        break;
+                    case 2:
+                        statusOrder.setOutForDelivery(statusBody.timestamp);
+                        ordersFacade.edit(statusOrder); // Persist
+                        break;
+                    case 3:
+                        statusOrder.setDelivered(statusBody.timestamp);
+                        ordersFacade.edit(statusOrder); // Persist
+                        break;
+                    default:
+                        System.out.println(statusBody.status);
+                        
+                }
+                
+                // Update here...
+                response.setStatus(HttpServletResponse.SC_OK);
+                break;
             case "/api/recently-viewed":
                 String s = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                 BookIdPost body = new ObjectMapper().readValue(s, BookIdPost.class);
                 
                 // This doesn't feel right...
-                usersFacade.find(id).setRecentBookId(booksFacade.find(body.bookId));
+                Users recentViewUser = usersFacade.find(id);
+                recentViewUser.setRecentBookId(booksFacade.find(body.bookId));
+                usersFacade.edit(recentViewUser); // Persist
+                
                 response.setStatus(HttpServletResponse.SC_CREATED);
+                response.getWriter().write("Done!");
                 break;
             case "/api/address/add":
                 String addressString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                 Addresses address = new ObjectMapper().readValue(addressString, Addresses.class);
                 address.setUserId(usersFacade.find(id));
-                addressesFacade.create(address);
+                addressesFacade.create(address); // Persist
                 
                 response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
                 response.sendRedirect("/cricket-shelf/checkout");
@@ -392,7 +403,7 @@ public class ControllerServlet extends HttpServlet {
                 String cardString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                 Cards card = new ObjectMapper().readValue(cardString, Cards.class);
                 card.setUserId(usersFacade.find(id));
-                cardsFacade.create(card);
+                cardsFacade.create(card); // Persist
                 
                 response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
                 response.sendRedirect("/cricket-shelf/checkout");

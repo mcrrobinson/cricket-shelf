@@ -27,7 +27,7 @@
         <div class="container">
             <div class="content-md">
                 <div class="card flex">
-                    <img src="https://m.media-amazon.com/images/I/51CNarr23wL._SY346_.jpg" alt="" />
+                    <img src="/cricket-shelf/img/${book.thumbnail}.jpg" alt="" />
                     <div class="book-info">
                         <div class="info">
                             <h1>${book.title}</h1>
@@ -46,7 +46,7 @@
                             <p>Year: ${book.publishYear}</p>
                         </div>
                         <div class="btn-holder">
-                            <input type="number" id="quantity" name="quantity" min="1" max="5">
+                            <input type="number" id="quantity" name="quantity" min="1" max="5" value="1">
                             <button id="addToCartButton" class="btn">Add to cart</button>
                         </div>
                     </div>
@@ -58,21 +58,23 @@
             </div>
         </div>
     </body>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
     <script>
         var addToCartButton = document.getElementById("addToCartButton");
         var quantityInput = document.getElementById("quantity");
         var relatedBooks = document.getElementById("relatedBooks");
         
-        fetch('/cricket-shelf/api/recently-viewed/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+        $.ajax({
+            type: "POST",
+            url: '/cricket-shelf/api/recently-viewed',
+            data: JSON.stringify({
               bookId: ${book.bookId}
-            })
+            }),
+            dataType: "json",
+            success: function(data, textStatus) {
+                console.log(data);
+            }
         });
-        
         fetch('/cricket-shelf/api/related-books?id=' + ${book.bookId}, {
             method: 'GET',
             headers: {

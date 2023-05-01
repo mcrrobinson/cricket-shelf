@@ -1,26 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Users;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import session.OrdersFacade;
 import session.UsersFacade;
 
 /**
@@ -54,14 +46,12 @@ public class AuthServlet extends HttpServlet {
         
         HttpSession session = request.getSession();
         String userPath = request.getServletPath();
-        
+           
         // if user already logged in...
         if(session.getAttribute("id") != null){
             response.sendRedirect("/cricket-shelf");
             return;
         }
-        
-        
         
         // use RequestDispatcher to forward request internally
         String url = "/WEB-INF/view" + userPath + ".jsp";
@@ -94,7 +84,6 @@ public class AuthServlet extends HttpServlet {
             }
             
             String serialisedPostBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            System.out.println(serialisedPostBody);
             LoginPost loginObject = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(serialisedPostBody, LoginPost.class);
             
             List<Users> users = usersFacade.findByEmailAddress(loginObject.emailAddress);
@@ -113,6 +102,7 @@ public class AuthServlet extends HttpServlet {
             } else {
                 Users user = users.get(0);
                 session.setAttribute("id", user.getUserId());
+                session.setAttribute("user", user);
                 response.sendRedirect("/cricket-shelf");
                 return;
             }
@@ -144,6 +134,7 @@ public class AuthServlet extends HttpServlet {
             usersFacade.create(user);
             
             session.setAttribute("id", 6);
+            session.setAttribute("user", user);
         }
         response.sendRedirect("/cricket-shelf");
         return;

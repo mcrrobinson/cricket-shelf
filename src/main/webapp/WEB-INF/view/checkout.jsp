@@ -373,8 +373,9 @@ class Payment {
             })
           }).then((response) => {
             if (response.redirected) {
-              window.location.href = response.url;
+              // window.location.href = response.url;
             }
+            console.log(response);
         });
     });
 
@@ -432,15 +433,46 @@ class Payment {
 }
 
 // Either turn into module, or use dirty trick... or create class...
-fetch('/cricket-shelf/api/addresses')
-  .then((res) => res.json())
-  .then((addressData) => {
+
+Promise.all([
+  fetch('/cricket-shelf/api/cards'),
+  fetch('/cricket-shelf/api/addresses')
+])
+  .then((responses) => Promise.all(responses.map((response) => response.json())))
+  .then((data) => {
+    // Payment content div
+    var payments = document.getElementById('payments');
+    var payment = new Payment(payments, data[0]);
+
+    const paymentData = data[0];
+    const addressData = data[1];
+
+    // If no payment methods, display form
+    if (data[0].length === 0) {
+      let paymentDiv = document.createElement('div');
+      paymentDiv.appendChild(payment.generatePaymentInputForm());
+      paymentDiv.appendChild(document.createElement('br'));
+      payments.appendChild(paymentDiv);
+    } else {
+      // Payment Buttons
+      var changePaymentButton = document.getElementById('changePaymentButton');
+      var closePaymentButton = document.getElementById('closePaymentButton');
+      var savePaymentButton = document.getElementById('savePaymentButton');
+
+      changePaymentButton.disabled = false;
+      changePaymentButton.addEventListener('click', payment.displayAllPayments.bind(payment));
+      closePaymentButton.addEventListener('click', payment.resetToDefaultPayment.bind(payment));
+      savePaymentButton.addEventListener('click', payment.updatePayment.bind(payment));
+
+      payment.setPayment();
+    }
+
     // Address content div
     var addresses = document.getElementById('addresses');
-    var address = new Address(addresses, addressData);
+    var address = new Address(addresses, data[1]);
 
     // If no address methods, display form
-    if (addressData.length === 0) {
+    if (data[1].length === 0) {
       let addressDiv = document.createElement('div');
       addressDiv.appendChild(address.generateAddressInputForm());
       addressDiv.appendChild(document.createElement('br'));
@@ -459,58 +491,46 @@ fetch('/cricket-shelf/api/addresses')
       address.setAddress();
     }
 
-    fetch('/cricket-shelf/api/cards')
-      .then((res) => res.json())
-      .then((paymentData) => {
-        // Payment content div
-        var payments = document.getElementById('payments');
-        var payment = new Payment(payments, paymentData);
+     // If either address or payment is not selected, keep button disabled
+     var placeOrderButton = document.getElementById('placeOrderButton');
+     if (data[1].length !== 0 && paymentData.length !== 0) {
+       placeOrderButton.disabled = false;
+     }
 
-        // If no payment methods, display form
-        if (paymentData.length === 0) {
-          let paymentDiv = document.createElement('div');
-          paymentDiv.appendChild(payment.generatePaymentInputForm());
-          paymentDiv.appendChild(document.createElement('br'));
-          payments.appendChild(paymentDiv);
-        } else {
-          // Payment Buttons
-          var changePaymentButton = document.getElementById('changePaymentButton');
-          var closePaymentButton = document.getElementById('closePaymentButton');
-          var savePaymentButton = document.getElementById('savePaymentButton');
-
-          changePaymentButton.disabled = false;
-          changePaymentButton.addEventListener('click', payment.displayAllPayments.bind(payment));
-          closePaymentButton.addEventListener('click', payment.resetToDefaultPayment.bind(payment));
-          savePaymentButton.addEventListener('click', payment.updatePayment.bind(payment));
-
-          payment.setPayment();
-        }
-
-        // If either address or payment is not selected, keep button disabled
-        var placeOrderButton = document.getElementById('placeOrderButton');
-        if (addressData.length !== 0 && paymentData.length !== 0) {
-          placeOrderButton.disabled = false;
-        }
-
-        // Upon clicking place order, send a POST request to the server
-        placeOrderButton.addEventListener('click', () => {
-          fetch('/cricket-shelf/api/order/place', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              addressId: addressData[address.savedAddressId].addressId,
-              paymentId: paymentData[payment.savedPaymentId].cardId
-            })
-          }).then((response) => {
-            if (response.redirected) {
-              window.location.href = response.url;
-            }
-          });
-        });
-      });
-  });
-
+     // Upon clicking place order, send a POST request to the server
+     placeOrderButton.addEventListener('click', () => {
+       fetch('/cricket-shelf/api/order/place', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({
+           addressId: addressData[address.savedAddressId].addressId,
+           paymentId: paymentData[payment.savedPaymentId].cardId
+         })
+       }).then((response) => {
+         if (response.redirected) {
+          console.log(response);
+           <!-- window.location.href = response.url; -->
+         }
+       });
+     });
+   });
 </script>
 </html>
+
+<!--$.ajax({
+    type: "POST",
+    url: reqUrl,
+    data: reqBody,
+    dataType: "json",
+    success: function(data, textStatus) {
+        if (data.redirect) {
+            // data.redirect contains the string URL to redirect to
+            window.location.href = data.redirect;
+        } else {
+            // data.form contains the HTML for the replacement form
+            $("#myform").replaceWith(data.form);
+        }
+    }
+});-->
