@@ -72,6 +72,9 @@ public class Orders implements Serializable {
     @Column(name = "DELIVERED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date delivered;
+    @Column(name = "CANCELLED")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date cancelled;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "orders")
     @JsonIgnore
     private Collection<OrderHasBook> orderHasBookCollection;
@@ -147,6 +150,14 @@ public class Orders implements Serializable {
 
     public void setDelivered(Date delivered) {
         this.delivered = delivered;
+    }
+    
+    public Date getCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(Date cancelled) {
+        this.cancelled = cancelled;
     }
 
     @XmlTransient

@@ -335,7 +335,7 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
         <input type="text" name="search" id="search" placeholder="Search for a book..." />
         <input type="submit" value="Search" />
       </form>
-      <a href="basket">Checkout</a>
+      <a href="basket">Basket</a>
       <a href="orders">Orders</a>
       <a class="logoutButton" href="login">Logout</a>
     </div>
@@ -349,7 +349,7 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
                 <span class="slider round"></span>
               </label>
               <footer class="blockquote-footer">
-                <i><small id="hint" class="text-muted">Click me to view all orders</small></i>
+                <i><small id="hint" class="text-muted">Click me to view all orders (admin mode)</small></i>
               </footer>
               <hr />
           </c:when>    
@@ -411,7 +411,6 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
       if (event.target.value.toLowerCase() === current.innerText.toLowerCase()) return;
 
       let date = new Date().toJSON();
-      
       fetch('/cricket-shelf/api/order/status', {
         method: 'POST',
         headers: {
@@ -421,24 +420,12 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
           orderId: data.orderId,
           status: event.target.value,
           timestamp: date,
-        }),
+        })
       })
       .then((response) => {
         if (response.status === 200) {
-          current.innerText = event.target.value;
-
-          if(event.target.value == 1){
-            allUsersTable.cell({row:rowIndex, column:colIndex + 1}).data(date).draw(false);
-          } else if(event.target.value == 2){
-            allUsersTable.cell({row:rowIndex, column:colIndex + 2}).data(date).draw(false);
-          } else if (event.target.value == 3){
-            allUsersTable.cell({row:rowIndex, column:colIndex + 3}).data(date).draw(false);
-          } else {
-            console.log('Invalid status')
-          }
-
-          // allUserTable.ajax.reload();
-          alert('Status updated successfully');
+            $('#example').DataTable().ajax.reload();
+            $('#allUsersTable').DataTable().ajax.reload();
         } else {
           alert('Error updating status');
         }
@@ -484,7 +471,7 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
         allUsersTable.style.display = 'none';
         allUsersTableWrapper.style.display = 'none';
 
-        hint.innerHTML = 'Click me to view all orders';
+        hint.innerHTML = 'Click me to view all orders (admin mode)';
         title.innerHTML = 'Your Orders';
       }
     }
@@ -504,11 +491,19 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
           type: 'unix',
           targets: 4,
           render: function (data, type, full, meta) {
-            return moment.utc(data, 'x').toISOString();
-          },
+            return data ? moment.utc(data, 'x').toISOString() : "";
+          }
         },
-        { type: 'html', targets: 5 },
-        { type: 'html', targets: 6 },
+        { type: 'unix', targets: 5,
+          render: function (data, type, full, meta) {
+            return data ? moment.utc(data, 'x').toISOString() : "";
+          }
+        },
+        { type: 'unix', targets: 6,
+          render: function (data, type, full, meta) {
+            return data ? moment.utc(data, 'x').toISOString() : "";
+          } 
+        }
       ],
       columns: [
         {
@@ -519,7 +514,47 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
         },
         { data: 'orderId', title: 'ID' },
         { data: 'total', title: 'Total' },
-        { data: 'status', title: 'Status' },
+        {
+                data: 'status',
+                title: 'Status',
+                className: 'statusMessage',
+                createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                  $(cell).on("dblclick", {rowData, rowIndex, colIndex}, function(e) {
+                    
+                    if(rowData.status !== 'Ordered') return;
+                    e.target.innerHTML = "";
+                    
+                    statusSelect = document.createElement('select');
+                    statusSelect.setAttribute('id', 'statusSelect');
+                    statusSelect.setAttribute('class', 'form-control');
+                    statusSelect.onchange = function(event){updateStatus(rowData, e.target, rowIndex, colIndex, event)};
+
+                    let option1 = document.createElement('option');
+                    option1.setAttribute('value', 1);
+                    option1.innerHTML = 'ORDERED';
+                    
+                    let option2 = document.createElement('option');
+                    option2.setAttribute('value', 2);
+                    option2.innerHTML = 'OUT_FOR_DELIVERY';
+                    option2.disabled = true;
+
+                    let option3 = document.createElement('option');
+                    option3.setAttribute('value', 3);
+                    option3.innerHTML = 'DELIVERED';
+                    option3.disabled = true;
+
+                    let option4 = document.createElement('option');
+                    option4.setAttribute('value', 4);
+                    option4.innerHTML = 'CANCELLED';
+
+                    statusSelect.appendChild(option1);
+                    statusSelect.appendChild(option2);
+                    statusSelect.appendChild(option3);
+                    statusSelect.appendChild(option4);
+                    e.target.appendChild(statusSelect);
+                  });
+                }
+              },
         { data: 'ordered', title: 'Ordered', type: 'date' },
         { data: 'outForDelivery', title: 'Out for delivery' },
         { data: 'delivered', title: 'Delivered' },
@@ -547,11 +582,19 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
                 type: 'unix',
                 targets: 4,
                 render: function (data, type, full, meta) {
-                  return moment.utc(data, 'x').toISOString();
-                },
+                  return data ? moment.utc(data, 'x').toISOString() : "";
+                }
               },
-              { type: 'html', targets: 5 },
-              { type: 'html', targets: 6 },
+              { type: 'unix', targets: 5,
+                render: function (data, type, full, meta) {
+                  return data ? moment.utc(data, 'x').toISOString() : "";
+                }
+              },
+              { type: 'unix', targets: 6,
+                render: function (data, type, full, meta) {
+                  return data ? moment.utc(data, 'x').toISOString() : "";
+                } 
+              }
             ],
             columns: [
               {
@@ -568,9 +611,8 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
                 className: 'statusMessage',
                 createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
                   $(cell).on("dblclick", {rowData, rowIndex, colIndex}, function(e) {
+                      if(rowData.status === 'Cancelled') return;
                       e.target.innerHTML = "";
-
-                      
                       
                       statusSelect = document.createElement('select');
                       statusSelect.setAttribute('id', 'statusSelect');
@@ -588,19 +630,15 @@ pageEncoding="UTF-8"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/co
                       let option3 = document.createElement('option');
                       option3.setAttribute('value', 3);
                       option3.innerHTML = 'DELIVERED';
-                      
-                      // if(current.toLowerCase() == "ordered"){
-                      //     option1.disabled = true;
-                      // } else if (current.toLowerCase() == "out for delivery"){
-                      //     option2.disabled = true;
-                      // } else if (current.toLowerCase() == "delivered") {
-                      //     option3.disabled = true;
-                      // } else {
-                      //     alert("Unrecognised option...");
-                      // }
+
+                      let option4 = document.createElement('option');
+                      option4.setAttribute('value', 4);
+                      option4.innerHTML = 'CANCELLED';
+
                       statusSelect.appendChild(option1);
                       statusSelect.appendChild(option2);
                       statusSelect.appendChild(option3);
+                      statusSelect.appendChild(option4);
                       e.target.appendChild(statusSelect);
                   });
                 }

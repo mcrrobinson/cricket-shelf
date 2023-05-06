@@ -20,7 +20,7 @@
                 <input type="text" name="search" id="search" placeholder="Search for a book..." />
                 <input type="submit" value="Search" />
             </form>
-            <a href="basket">Checkout</a>
+            <a href="basket">Basket</a>
             <a href="orders">Orders</a>
             <a class="logoutButton" href="login">Logout</a>
         </div>

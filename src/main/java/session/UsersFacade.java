@@ -5,7 +5,6 @@
  */
 package session;
 
-import entity.Books;
 import entity.Users;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -28,21 +27,37 @@ public class UsersFacade extends AbstractFacade<Users> {
         return em;
     }
     
-//    public List<Users> findByEmailAndPassword(String title){
-//        Query query = em.createNamedQuery("Users.findByEmailAndPassword");
-//        query.setParameter("emailAddress", title);
-//        query.setParameter("password", title);
-//        return query.getResultList();
-//    }
-    
-    public List<Users> findByEmailAddress(String title){
+    /**
+     * Queries the database for a user with the input email.
+     * 
+     * @param email User email
+     * @return A list of entities that matched the query, this should never be
+     * more than one.
+     */
+    public List<Users> findByEmailAddress(String email){
         Query query = em.createNamedQuery("Users.findByEmailAddress");
-        query.setParameter("emailAddress", title);
+        query.setParameter("emailAddress", email);
         return query.getResultList();
-    }
+     }
 
+    /**
+     * Queries the database, returns the user entity if one exists with the 
+     * input email and password
+     * 
+     * @param email User email
+     * @param password User password
+     * @return A list of entities that matched the query, this should never be
+     * more than one.
+     */
+     public List<Users> findByEmailAndPassword(String email, String password){
+        Query query = em.createNamedQuery("Users.findByEmailAndPassword");
+        query.setParameter("emailAddress", email);
+        query.setParameter("password", password);
+        return query.getResultList();
+     }
+    
     public UsersFacade() {
         super(Users.class);
     }
-    
+
 }

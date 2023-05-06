@@ -42,7 +42,7 @@
       <input type="text" name="search" id="search" placeholder="Search for a book..." />
       <input type="submit" value="Search" />
     </form>
-    <a href="basket">Checkout</a>
+    <a href="basket">Basket</a>
     <a href="orders">Orders</a>
     <a class="logoutButton" href="login">Logout</a>
   </div>
@@ -272,6 +272,7 @@ class Payment {
     this.paymentData = paymentData;
     this.savedPaymentId = 0;
   }
+  
   setPayment() {
     let label = document.createElement('label');
     label.htmlFor = 'payment_' + this.paymentData[this.savedPaymentId].cardId;
@@ -320,10 +321,12 @@ class Payment {
     let expiryMonth = document.createElement('input');
     expiryMonth.id = 'expiryMonth';
     expiryMonth.name = 'expiryMonth';
+    expiryMonth.type = 'number';
 
     let expiryYear = document.createElement('input');
     expiryYear.id = 'expiryYear';
     expiryYear.name = 'expiryYear';
+    expiryYear.type = 'number';
 
     let cardNumber_label = document.createElement('label');
     cardNumber_label.htmlFor = 'cardNumber';
@@ -359,7 +362,7 @@ class Payment {
 
     let submitButton = document.createElement('button');
     submitButton.innerText = 'Add';
-    submitButton.addEventListener('click', () => {
+    submitButton.addEventListener('click', () => {        
         fetch('/cricket-shelf/api/card/add', {
             method: 'POST',
             headers: {
@@ -373,7 +376,7 @@ class Payment {
             })
           }).then((response) => {
             if (response.redirected) {
-              // window.location.href = response.url;
+              window.location.href = response.url;
             }
             console.log(response);
         });
@@ -510,27 +513,12 @@ Promise.all([
          })
        }).then((response) => {
          if (response.redirected) {
-          console.log(response);
-           <!-- window.location.href = response.url; -->
+           window.location.href = response.url;
          }
+       }).catch((response) => {
+           console.warn(response);
        });
      });
    });
 </script>
 </html>
-
-<!--$.ajax({
-    type: "POST",
-    url: reqUrl,
-    data: reqBody,
-    dataType: "json",
-    success: function(data, textStatus) {
-        if (data.redirect) {
-            // data.redirect contains the string URL to redirect to
-            window.location.href = data.redirect;
-        } else {
-            // data.form contains the HTML for the replacement form
-            $("#myform").replaceWith(data.form);
-        }
-    }
-});-->

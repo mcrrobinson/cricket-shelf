@@ -7,6 +7,7 @@ package entity;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,6 +21,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -38,8 +41,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName"),
     @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName"),
     @NamedQuery(name = "Users.findByEmailAddress", query = "SELECT u FROM Users u WHERE u.emailAddress = :emailAddress"),
+    @NamedQuery(name = "Users.findByPassword", query = "SELECT u FROM Users u WHERE u.password = :password"),
     @NamedQuery(name = "Users.findByAdmin", query = "SELECT u FROM Users u WHERE u.admin = :admin"),
-    // @NamedQuery(name = "Users.findByEmailAndPassword", query = "SELECT u FROM Users u WHERE u.emailAddress = :emailAddress AND u.password= :password"),
+    @NamedQuery(name = "Users.findByEmailAndPassword", query = "SELECT u FROM Users u WHERE u.emailAddress = :emailAddress AND u.password= :password"),
     @NamedQuery(name = "Users.findByBasketTotal", query = "SELECT u FROM Users u WHERE u.basketTotal = :basketTotal")})
 public class Users implements Serializable {
 
@@ -66,12 +70,22 @@ public class Users implements Serializable {
     private String emailAddress;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 250)
+    @Column(name = "PASSWORD")
+    private String password;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "ADMIN")
     private Boolean admin;
     @Basic(optional = false)
     @NotNull
     @Column(name = "BASKET_TOTAL")
     private double basketTotal;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "LOGIN_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date loginDate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     private Collection<BasketHasBook> basketHasBookCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
@@ -91,13 +105,15 @@ public class Users implements Serializable {
         this.userId = userId;
     }
 
-    public Users(Integer userId, String firstName, String lastName, String emailAddress, Boolean admin, double basketTotal) {
+    public Users(Integer userId, String firstName, String lastName, String emailAddress, String password, Boolean admin, double basketTotal, Date loginDate) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
+        this.password = password;
         this.admin = admin;
         this.basketTotal = basketTotal;
+        this.loginDate = loginDate;
     }
 
     public Integer getUserId() {
@@ -131,6 +147,14 @@ public class Users implements Serializable {
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
+    
+    public String getPassword(){
+        return password;
+    }
+    
+    public void setPassword(String password){
+        this.password = password;
+    }
 
     public Boolean getAdmin() {
         return admin;
@@ -146,6 +170,14 @@ public class Users implements Serializable {
 
     public void setBasketTotal(double basketTotal) {
         this.basketTotal = basketTotal;
+    }
+    
+    public Date getLoginDate() {
+        return this.loginDate;
+    }
+
+    public void setLoginDate(Date loginDate) {
+        this.loginDate = loginDate;
     }
 
     @XmlTransient

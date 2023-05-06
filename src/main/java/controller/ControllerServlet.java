@@ -7,7 +7,6 @@ package controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Addresses;
-import entity.Authors;
 import entity.BasketHasBook;
 import entity.BasketHasBookPK;
 import entity.Books;
@@ -22,14 +21,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,69 +36,132 @@ import session.AddressesFacade;
 import session.BasketHasBookFacade;
 import session.BooksFacade;
 import session.CardsFacade;
-import session.GenresFacade;
 import session.OrderHasBookFacade;
 import session.OrdersFacade;
 import session.UsersFacade;
-
 
 /**
  *
  * @author Squash
  */
 @WebServlet(name = "ControllerServlet", urlPatterns = {
-    "/api/cart/add", 
-    "/api/cart/list", 
-    "/api/order/place",
-    "/api/orders/list",
-    "/api/orders/product",
-    "/api/addresses",
-    "/api/address/add",
-    "/api/search",
-    "/api/cards",
-    "/api/card/add",
-    "/api/recently-viewed",
-    "/api/recently-added",
-    "/api/related-books"})
+        "/api/cart/add",
+        "/api/cart/list",
+        "/api/order/place",
+        "/api/orders/list",
+        "/api/orders/product",
+        "/api/addresses",
+        "/api/address/add",
+        "/api/search",
+        "/api/cards",
+        "/api/card/add",
+        "/api/recently-viewed",
+        "/api/recently-added",
+        "/api/related-books" })
 public class ControllerServlet extends HttpServlet {
     private ServletContext ctx;
-    
+
     @EJB
     private OrdersFacade ordersFacade;
-    
+
     @EJB
     private UsersFacade usersFacade;
-    
+
     @EJB
     private BooksFacade booksFacade;
-    
+
     @EJB
     private CardsFacade cardsFacade;
-    
+
     @EJB
     private AddressesFacade addressesFacade;
-    
+
     @EJB
     private BasketHasBookFacade basketFacade;
-    
+
     @EJB
     private OrderHasBookFacade orderFacade;
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         this.ctx = config.getServletContext();
     }
-    
-    public boolean getAdminStatus(){
+
+    /**
+     * Creates an order object, publishes it to the database and returns the
+     * Order with the inserted ID.
+     * 
+     * @param id          Order ID in the database
+     * @param basketBooks Collection of books in the users basket.
+     * @param addressId   Address ID in the database
+     * @param cardId      Payment ID in the database
+     * @return Order object as per in the database
+     */
+    private Orders createOrder(int id, Collection<BasketHasBook> basketBooks, int addressId, int cardId) {
+        Orders order = new Orders();
+        order.setTotal(getTotalFromBookCollection(basketBooks));
+        order.setStatus("Ordered");
+        order.setOrdered(new Date());
+
+        // Why is this requesting an object, should be an integer?
+        order.setAddressId(addressesFacade.find(addressId));
+        order.setCardId(cardsFacade.find(cardId));
+        order.setUserId(usersFacade.find(id));
+
+        return ordersFacade.createReturnObject(order); // Custom Persist
+    }
+
+    /**
+     * Authenticates the supplied payment and address id's are valid.
+     * 
+     * @param userId            User id
+     * @param suppliedPaymentId The Database ID for the payment information
+     * @param suppliedAddressId The Database ID for the address information
+     * @return
+     */
+    private boolean validOrder(int userId, int suppliedPaymentId, int suppliedAddressId) {
+        // Finds the card by the supplied ID.
+        Cards paymentCard = cardsFacade.find(suppliedPaymentId);
+
+        // Finds the user ID on the card entry.
+        Integer paymentUserId = paymentCard.getUserId().getUserId();
+
+        // Finds the address by the supplied ID
+        Addresses addressPresented = addressesFacade.find(suppliedAddressId);
+
+        // Finds the user ID on the address entry.
+        Integer addressUserId = addressPresented.getUserId().getUserId();
+
+        // If either the ID for the card or address don't match, return
+        // forbidden status.
+        return !(paymentUserId != userId || addressUserId != userId);
+    }
+
+    /**
+     * Checks if the user is an admin.
+     * 
+     * @return True if the user is an admin, false otherwise.
+     */
+    public boolean getAdminStatus() {
         return true;
     }
-    
-    private double getTotalFromBookCollection(Collection<BasketHasBook> bookCollection){
+
+    /**
+     * Calculates the total price of a collection of BasketHasBook objects.
+     * 
+     * @param bookCollection The collection of BasketHasBook objects.
+     * @return The total price of the collection.
+     */
+    private double getTotalFromBookCollection(Collection<BasketHasBook> bookCollection) {
+
         double runningTotal = 0;
-        for(BasketHasBook basketBook : bookCollection){
+        for (BasketHasBook basketBook : bookCollection) {
             Integer qty = basketBook.getQuantity();
-            double bookSalesPrice = basketBook.getBooks().getSalesPrice();
-            
+
+            // I have to do this again, because for some reason it doesn't instantiate the
+            // JPA connection
+            double bookSalesPrice = booksFacade.find(basketBook.getBasketHasBookPK().getBookId()).getSalesPrice();
+
             runningTotal += qty * bookSalesPrice;
         }
         return runningTotal;
@@ -109,31 +170,31 @@ public class ControllerServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int id;
-        String userPath = request.getServletPath();             
+        String userPath = request.getServletPath();
         HttpSession session = request.getSession();
-        
-        if(userPath.equals("/api/logout")){
+
+        if (userPath.equals("/api/logout")) {
             session.invalidate();
             response.sendRedirect("/cricket-shelf/login");
             return;
         }
-        
+
         Object id_attribute = session.getAttribute("id");
-        if(id_attribute==null){
+        if (id_attribute == null) {
             response.sendRedirect("/cricket-shelf/login");
             return;
         } else {
             try {
-                id = (int)id_attribute;
+                id = (int) id_attribute;
             } catch (ClassCastException e) {
                 System.out.println("User session ID was set with a non-int value, resetting session...");
                 session.invalidate();
@@ -141,10 +202,8 @@ public class ControllerServlet extends HttpServlet {
                 return;
             }
         }
-//        id = 107;
-        
-        
-        switch(userPath){
+
+        switch (userPath) {
             case "/api/related-books":
                 String bookId = request.getParameter("id");
                 int bookIdAsInt;
@@ -155,36 +214,42 @@ public class ControllerServlet extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     break;
                 }
-                
+
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
-                
+
                 // Gets the books related to the books genre.
                 Books book = booksFacade.find(bookIdAsInt);
                 Collection<Genres> genreCollection = book.getGenresCollection();
-                List<Books> listOfBooks = new ArrayList<Books>();  
-                for(Genres genre: genreCollection){
-                    for(Books bookFromGenre : genre.getBooksCollection()){
-                        
-                        if(bookFromGenre.getBookId() != book.getBookId()){
+                List<Books> listOfBooks = new ArrayList<Books>();
+                for (Genres genre : genreCollection) {
+                    for (Books bookFromGenre : genre.getBooksCollection()) {
+
+                        if (!Objects.equals(bookFromGenre.getBookId(), book.getBookId())) {
                             listOfBooks.add(bookFromGenre);
                         }
-                        
+
                     }
                 }
-                
+
                 response.getWriter().write(new ObjectMapper().writeValueAsString(listOfBooks));
                 break;
-                
+
             case "/api/cart/list":
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
-                response.getWriter().write(new ObjectMapper().writeValueAsString(usersFacade.find(id).getBasketHasBookCollection().toArray()));
+                Collection<BasketHasBook> usersBasket = usersFacade.find(id).getBasketHasBookCollection();
+                response.getWriter().write(new ObjectMapper().writeValueAsString(usersBasket.toArray()));
                 break;
             case "/api/orders/list":
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
-                response.getWriter().write(new ObjectMapper().writeValueAsString(usersFacade.find(id).getOrdersCollection().toArray()));
+
+                usersFacade.reloadEntityManager();
+                Collection<Orders> userOrders = usersFacade.find(id).getOrdersCollection();
+
+                // Reload entity manager... or remove transient?
+                response.getWriter().write(new ObjectMapper().writeValueAsString(userOrders.toArray()));
                 break;
             case "/api/orders/list-all":
                 response.setContentType("text/json");
@@ -194,10 +259,10 @@ public class ControllerServlet extends HttpServlet {
             case "/api/orders/product":
                 Integer orderIdAsInt;
                 String orderId = request.getParameter("id");
-                
+
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
-                
+
                 try {
                     orderIdAsInt = Integer.parseInt(orderId);
                 } catch (NumberFormatException err) {
@@ -205,24 +270,27 @@ public class ControllerServlet extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     break;
                 }
-                
+
                 Orders order = ordersFacade.find(orderIdAsInt);
-                if(order == null){
+                if (order == null) {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     break;
                 }
-                
-                response.getWriter().write(new ObjectMapper().writeValueAsString(order.getOrderHasBookCollection().toArray()));
+
+                response.getWriter()
+                        .write(new ObjectMapper().writeValueAsString(order.getOrderHasBookCollection().toArray()));
                 break;
             case "/api/addresses":
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
-                response.getWriter().write(new ObjectMapper().writeValueAsString(usersFacade.find(id).getAddressesCollection().toArray()));
+                response.getWriter().write(
+                        new ObjectMapper().writeValueAsString(usersFacade.find(id).getAddressesCollection().toArray()));
                 break;
             case "/api/cards":
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
-                response.getWriter().write(new ObjectMapper().writeValueAsString(usersFacade.find(id).getCardsCollection().toArray()));
+                response.getWriter().write(
+                        new ObjectMapper().writeValueAsString(usersFacade.find(id).getCardsCollection().toArray()));
                 break;
             case "/api/recently-viewed":
                 Books recentlyViewedBook;
@@ -230,8 +298,9 @@ public class ControllerServlet extends HttpServlet {
                 response.setHeader("Cache-Control", "no-cache");
                 try {
                     recentlyViewedBook = usersFacade.find(id).getRecentBookId();
-                } catch (java.lang.NullPointerException err){
-                    System.out.println("User returned null pointer on recent book, they likely haven't viewed a book yet.");
+                } catch (java.lang.NullPointerException err) {
+                    System.out.println(
+                            "User returned null pointer on recent book, they likely haven't viewed a book yet.");
                     response.getWriter().write("null");
                     break;
                 }
@@ -241,11 +310,12 @@ public class ControllerServlet extends HttpServlet {
                 Books recentlyAddedBook;
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");
-                
+
                 try {
                     recentlyAddedBook = booksFacade.findLastBook();
-                } catch (java.lang.NullPointerException err){
-                    System.out.println("Recently added books returned null pointer, there are likely no books in the dir.");
+                } catch (java.lang.NullPointerException | javax.ejb.EJBException err) {
+                    System.out.println(
+                            "Recently added books returned null pointer, there are likely no books in the dir.");
                     response.getWriter().write("null");
                     break;
                 }
@@ -259,25 +329,25 @@ public class ControllerServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         int id;
-        String userPath = request.getServletPath();             
+        String userPath = request.getServletPath();
         HttpSession session = request.getSession();
         Object id_attribute = session.getAttribute("id");
-        if(id_attribute==null){
+        if (id_attribute == null) {
             response.sendRedirect("/cricket-shelf/login");
             return;
         } else {
             try {
-                id = (int)id_attribute;
+                id = (int) id_attribute;
             } catch (ClassCastException e) {
                 System.out.println("User session ID was set with a non-int value, resetting session...");
                 session.invalidate();
@@ -285,78 +355,94 @@ public class ControllerServlet extends HttpServlet {
                 return;
             }
         }
-           
-        switch(userPath){
+
+        switch (userPath) {
             case "/api/cart/add":
-                String serialisedBookAdd = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+                String serialisedBookAdd = request.getReader().lines()
+                        .collect(Collectors.joining(System.lineSeparator()));
                 AddBookClass deserialisedBook = new ObjectMapper().readValue(serialisedBookAdd, AddBookClass.class);
-                
+
                 BasketHasBookPK basketHasBookPk = new BasketHasBookPK(id, deserialisedBook.bookId);
-                basketFacade.create(new BasketHasBook(basketHasBookPk, deserialisedBook.quantity)); // Persist
-                
+                BasketHasBook basketHasBook = new BasketHasBook(basketHasBookPk, deserialisedBook.quantity);
+                basketFacade.create(basketHasBook); // Persist
+
+                basketFacade.reloadEntityManager();
+
                 response.setStatus(HttpServletResponse.SC_CREATED);
                 response.sendRedirect("/cricket-shelf");
                 break;
             case "/api/order/place":
-                System.out.println("starting...");
-                String serialisedPostBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+                String serialisedPostBody = request.getReader().lines()
+                        .collect(Collectors.joining(System.lineSeparator()));
                 OrderPlacePost orderBody = new ObjectMapper().readValue(serialisedPostBody, OrderPlacePost.class);
-                
-                
-                Cards paymentCard = cardsFacade.find(orderBody.paymentId);
-                Integer paymentUserId = paymentCard.getUserId().getUserId();
 
-                Addresses addressPresented = addressesFacade.find(orderBody.addressId);
-                Integer addressUserId = addressPresented.getUserId().getUserId();
-                
-                if(paymentUserId != id || addressUserId != id){
+                // Validates user request.
+                if (!validOrder(id, orderBody.paymentId, orderBody.addressId)) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    break;
+                    return;
                 }
-                
-                // Clears basket
+
+                // Gets all baket books
                 Collection<BasketHasBook> basketBooks = usersFacade.find(id).getBasketHasBookCollection();
-                Orders order = new Orders();
-                    
-                order.setTotal(getTotalFromBookCollection(basketBooks));
-                order.setStatus("Ordered");
-                order.setOrdered(new Date());
-                
-                // Why is this requesting an object, should be an integer?
-                order.setAddressId(addressPresented);
-                order.setCardId(paymentCard);
-                order.setUserId(usersFacade.find(id));
-                
-                Orders databaseOrder = ordersFacade.createReturnObject(order); // Custom Persist
-                
-                for(BasketHasBook book : basketBooks) {
-                   
-                    Books localBook = book.getBooks();                    
+                if (basketBooks.size() < 1) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+
+                // Creates database order enttiy.
+                Orders databaseOrder = createOrder(id, basketBooks, orderBody.addressId, orderBody.paymentId);
+                ordersFacade.reloadEntityManager();
+
+                for (BasketHasBook book : basketBooks) {
+
+                    Books localBook = booksFacade.find(book.getBasketHasBookPK().getBookId());
                     OrderHasBook bookOrder = new OrderHasBook(
-                            new OrderHasBookPK(
-                                    databaseOrder.getOrderId(), 
-                                    localBook.getBookId()),
-                            book.getQuantity(), 
+                            new OrderHasBookPK(databaseOrder.getOrderId(), localBook.getBookId()), book.getQuantity(),
                             localBook.getSalesPrice());
-                    
                     orderFacade.create(bookOrder);
                     basketFacade.remove(book);
                 }
-                
+
+                ordersFacade.reloadEntityManager();
+                basketFacade.reloadEntityManager();
+
                 response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
                 response.sendRedirect("/cricket-shelf/");
                 break;
             case "/api/order/status":
-                String serialisedStatusBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+                String serialisedStatusBody = request.getReader().lines()
+                        .collect(Collectors.joining(System.lineSeparator()));
                 StatusPost statusBody = new ObjectMapper().readValue(serialisedStatusBody, StatusPost.class);
-                
+                Users sessionStatusUser = (Users) session.getAttribute("user");
+
+                // Gets the order of the requested status update
                 Orders statusOrder = ordersFacade.find(statusBody.orderId);
-                if(id != statusOrder.getUserId().getUserId()){
+
+                // If it's a user and not an admin, they can only cancel the order.
+                if (!(sessionStatusUser.getAdmin())) {
+                    if (statusBody.status != 4) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        return;
+                    }
+
+                    // If the requested order update doesn't match the user's ID, they can't update
+                    // it.
+                    if (id != statusOrder.getUserId().getUserId()) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        return;
+                    }
+                }
+
+                // Order already been cancelled, cannot restart it...
+                if (statusOrder.getCancelled() != null) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     return;
                 }
-  
-                switch(statusBody.status){
+
+                // Sets the status to the string of the map value.
+                statusOrder.setStatus(Helper.statuses.get(statusBody.status));
+
+                switch (statusBody.status) {
                     case 1:
                         statusOrder.setOrdered(statusBody.timestamp);
                         ordersFacade.edit(statusOrder); // Persist
@@ -369,23 +455,27 @@ public class ControllerServlet extends HttpServlet {
                         statusOrder.setDelivered(statusBody.timestamp);
                         ordersFacade.edit(statusOrder); // Persist
                         break;
+                    case 4:
+                        statusOrder.setCancelled(statusBody.timestamp);
+                        ordersFacade.edit(statusOrder); // Persist
+                        break;
                     default:
                         System.out.println(statusBody.status);
-                        
+
                 }
-                
+
                 // Update here...
                 response.setStatus(HttpServletResponse.SC_OK);
                 break;
             case "/api/recently-viewed":
                 String s = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                 BookIdPost body = new ObjectMapper().readValue(s, BookIdPost.class);
-                
+
                 // This doesn't feel right...
                 Users recentViewUser = usersFacade.find(id);
                 recentViewUser.setRecentBookId(booksFacade.find(body.bookId));
                 usersFacade.edit(recentViewUser); // Persist
-                
+
                 response.setStatus(HttpServletResponse.SC_CREATED);
                 response.getWriter().write("Done!");
                 break;
@@ -394,30 +484,28 @@ public class ControllerServlet extends HttpServlet {
                 Addresses address = new ObjectMapper().readValue(addressString, Addresses.class);
                 address.setUserId(usersFacade.find(id));
                 addressesFacade.create(address); // Persist
-                
+
+                addressesFacade.reloadEntityManager();
+
                 response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
                 response.sendRedirect("/cricket-shelf/checkout");
                 break;
-                
+
             case "/api/card/add":
                 String cardString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                 Cards card = new ObjectMapper().readValue(cardString, Cards.class);
                 card.setUserId(usersFacade.find(id));
                 cardsFacade.create(card); // Persist
-                
+
+                cardsFacade.reloadEntityManager();
+
                 response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
                 response.sendRedirect("/cricket-shelf/checkout");
                 break;
-                
-            default:
-                 // use RequestDispatcher to forward request internally
-                String url = "/WEB-INF/view" + userPath + ".jsp";
 
-                try {
-                    request.getRequestDispatcher(url).forward(request, response);
-                } catch (IOException | ServletException ex) {
-                    ex.printStackTrace();
-                }
+            default:
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                break;
         }
     }
 

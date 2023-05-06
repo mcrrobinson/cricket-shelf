@@ -24,7 +24,7 @@ to the browser -->
                     <input type="text" name="search" id="search" placeholder="Search for a book..." />
                     <input type="submit" value="Search" />
                 </form>
-                <a href="basket">Checkout</a>
+                <a href="basket">Basket</a>
                 <a href="orders">Orders</a>
                 <a class="logoutButton" href="/cricket-shelf/api/logout">Logout</a>
             </div>
@@ -38,7 +38,13 @@ to the browser -->
     <script>
         var content = document.getElementById("content");
         
-    fetch('/cricket-shelf/api/recently-viewed').then(res => res.json()).then(book => {
+    fetch('/cricket-shelf/api/recently-viewed').then(res => {
+                if(res.redirected){
+                    window.location.href = res.url;
+                } else {
+                    return res.json();
+                }
+            }).then(book => {
         if(book == null) return;
         
         var card = document.createElement("div");
@@ -59,8 +65,15 @@ to the browser -->
         card.appendChild(link);
         content.appendChild(card);
     });
-    fetch('/cricket-shelf/api/recently-added').then(res => res.json()).then(book => {
-        if(book == null) return;
+    fetch('/cricket-shelf/api/recently-added')
+            .then(res => {
+                if(res.redirected){
+                    window.location.href = res.url;
+                } else {
+                    return res.json();
+                }
+            }).then(book => {
+        if(book === null) return;
         
         var card = document.createElement("div");
         card.classList = "card padding-sm align-center margin20";

@@ -7,13 +7,16 @@ and open the template in the editor.
     Created on : 09-Mar-2023, 15:46:16
     Author     : Squash
 */
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
 html {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Roboto", sans-serif;
 }
+
 body {
     margin: 0;
 }
+
 .card {
     background-color: #f1f1f1;
     margin: 20px;
@@ -23,7 +26,7 @@ body {
     border-radius: 10px;
 }
 
-.flex { 
+.flex {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -36,12 +39,12 @@ body {
 
 .card-background-light {
     background-color: #a5a5a5;
-    padding:10px;
+    padding: 10px;
 }
 
 .card-background-dark {
     background-color: #333;
-    padding:10px;
+    padding: 10px;
 }
 
 .collapsible {
@@ -75,7 +78,8 @@ body {
     padding-right: 15px;
 }
 
-.content-sm, .content-md {
+.content-sm,
+.content-md {
     align-items: flex-start;
     display: flex;
     flex-direction: row;
@@ -97,6 +101,7 @@ body {
     justify-content: flex-end;
     display: flex;
 }
+
 .book-info .btn-holder button {
     padding: 10px 25px;
     background: #ddd;
@@ -112,11 +117,12 @@ body {
     align-items: center;
     font-size: large;
 }
+
 .no-margin-top {
     margin-top: 0;
 }
 
-.topnav > a {
+.topnav>a {
     float: left;
     color: #f2f2f2;
     text-align: center;
@@ -124,11 +130,11 @@ body {
     text-decoration: none;
 }
 
-.topnav > .homeButton {
+.topnav>.homeButton {
     padding-left: 1vw;
 }
 
-.topnav > .logoutButton {
+.topnav>.logoutButton {
     padding-right: 1vw;
 }
 
@@ -144,6 +150,7 @@ body {
 .padding-sm {
     padding: 10px;
 }
+
 .info {
     padding: 10px;
     font-size: 17px;
@@ -157,7 +164,7 @@ body {
     width: 100%;
     padding: 6px;
     border: none;
-    font-size:inherit;
+    font-size: inherit;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
@@ -166,7 +173,7 @@ body {
     background: #ddd;
     border: none;
     cursor: pointer;
-    font-size:inherit;
+    font-size: inherit;
     padding: 6px;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;

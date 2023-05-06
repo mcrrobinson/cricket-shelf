@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Users;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
@@ -26,19 +27,18 @@ import session.UsersFacade;
     "/api/login",
     "/api/signup"})
 public class AuthServlet extends HttpServlet {
+    
+    @EJB
+    private UsersFacade usersFacade;
 
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
-     * @param response servlet response
+     * @param request Servlet request
+     * @param response Servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
-    @EJB
-    private UsersFacade usersFacade;
-    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -86,7 +86,7 @@ public class AuthServlet extends HttpServlet {
             String serialisedPostBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             LoginPost loginObject = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(serialisedPostBody, LoginPost.class);
             
-            List<Users> users = usersFacade.findByEmailAddress(loginObject.emailAddress);
+            List<Users> users = usersFacade.findByEmailAndPassword(loginObject.emailAddress, loginObject.password);
             if(users.isEmpty()){
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("text/html");
@@ -101,6 +101,9 @@ public class AuthServlet extends HttpServlet {
                 return;
             } else {
                 Users user = users.get(0);
+                user.setLoginDate(new Date());
+                usersFacade.edit(user);
+                
                 session.setAttribute("id", user.getUserId());
                 session.setAttribute("user", user);
                 response.sendRedirect("/cricket-shelf");
@@ -120,7 +123,7 @@ public class AuthServlet extends HttpServlet {
                 
                 // EMAIL ALREADY EXISTS
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.sendRedirect("/signup");
+                response.sendRedirect("/cricket-shelf/signup");
                 return;
             }
             
@@ -129,15 +132,16 @@ public class AuthServlet extends HttpServlet {
             user.setFirstName(signupObject.firstName);
             user.setLastName(signupObject.lastName);
             user.setEmailAddress(signupObject.emailAddress);
+            user.setPassword(signupObject.password);
             user.setAdmin(false);
             user.setBasketTotal(0);
+            user.setLoginDate(new Date());
             usersFacade.create(user);
             
             session.setAttribute("id", 6);
             session.setAttribute("user", user);
         }
         response.sendRedirect("/cricket-shelf");
-        return;
     }
 
     /**

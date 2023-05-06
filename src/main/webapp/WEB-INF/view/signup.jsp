@@ -120,6 +120,43 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+
+        .cookie-container {
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            background-color: rgba(0, 74, 151, 0.9);
+        }
+        .cookies {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 999;
+        }
+
+        .cookie-container > div {
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .cookie-container > .close {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            align-self: center;
+            padding: 0 1rem;
+            cursor: pointer;
+            background-color: #004a97;
+            transition: background-color 0.3s ease;
+            margin-right: 0.5rem;
+        }
+
+        .cookie-container > .close:hover {
+            background-color: #fff;
+            color: #004a97;
+        }
+
     </style>
     </head>
     <body>
@@ -132,9 +169,15 @@
                     <input type="text" id="lastName" placeholder="last name" />
                     <input type="text" id="password" placeholder="password" />
                     <input type="text" id="confirmPassword" placeholder="confirm password" />
-                    <button>create</button>
+                    <button onclick="onSignupRequest()">create</button>
                     <p class="message">Already registered? <a href="/cricket-shelf/login">Sign In</a></p>
                 </div>
+            </div>
+        </div>
+        <div class="cookies" style="display:none;">
+            <div class="cookie-container">
+            <div id="close" class="close">X</div>
+            <div class="col-sm-12">This site uses cookies in order to run properly and create a better user experience. If you continue it will be assumed that you agree to the use of cookies.</div>
             </div>
         </div>
     </body>
@@ -143,6 +186,17 @@
         var firstName = document.getElementById("firstName");
         var lastName = document.getElementById("lastName");
         var password = document.getElementById("password");
+
+        let accepted = sessionStorage.getItem("acceptedCookies");
+        if (!accepted) {
+            document.querySelector(".cookies").style.display = "block";
+        }
+
+        let close = document.getElementById("close");
+
+        close.addEventListener("click", function(){
+            event.target.parentElement.parentElement.style.display = "none";
+        });
         function onSignupRequest(){
             fetch('/cricket-shelf/api/signup', {
                 method: 'POST',

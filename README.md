@@ -49,3 +49,15 @@ DatabaseName | cricketstore
 11. Ping to check...
 
 <!-- Session cookies are considered strictly necessary cookies. Hence, per most data regulations, such as the GDPR, websites do not need to gain users' consent to set them on their devices.25 Oct 2022 -->
+
+<!-- CREATE TABLE USERS (
+	user_id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+	first_name VARCHAR(25) NOT NULL,
+	last_name VARCHAR(25) NOT NULL,
+	email_address VARCHAR(250) NOT NULL,
+    password VARCHAR(250) NOT NULL,
+	admin BOOLEAN NOT NULL,
+	recent_book_id INT REFERENCES BOOKS(book_id),
+    basket_total DOUBLE NOT NULL,
+	PRIMARY KEY (user_id)
+); -->

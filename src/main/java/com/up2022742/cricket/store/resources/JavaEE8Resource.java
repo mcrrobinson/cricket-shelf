@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 
 /**
  *
- * @author 
+ * @author Squash
  */
 @Path("javaee8")
 public class JavaEE8Resource {

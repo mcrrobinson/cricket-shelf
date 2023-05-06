@@ -33,7 +33,7 @@ public class BooksFacade extends AbstractFacade<Books> {
         return query.getResultList();
     }
     
-    public Books findLastBook(){
+    public Books findLastBook() throws javax.ejb.EJBException{
         return (Books) em.createNamedQuery("Books.findLastBook").getSingleResult();
     }
 
