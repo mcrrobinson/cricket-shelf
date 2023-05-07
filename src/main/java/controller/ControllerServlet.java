@@ -256,30 +256,6 @@ public class ControllerServlet extends HttpServlet {
                 response.setHeader("Cache-Control", "no-cache");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(ordersFacade.findAll().toArray()));
                 break;
-            case "/api/orders/product":
-                Integer orderIdAsInt;
-                String orderId = request.getParameter("id");
-
-                response.setContentType("text/json");
-                response.setHeader("Cache-Control", "no-cache");
-
-                try {
-                    orderIdAsInt = Integer.parseInt(orderId);
-                } catch (NumberFormatException err) {
-                    err.printStackTrace();
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    break;
-                }
-
-                Orders order = ordersFacade.find(orderIdAsInt);
-                if (order == null) {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    break;
-                }
-
-                response.getWriter()
-                        .write(new ObjectMapper().writeValueAsString(order.getOrderHasBookCollection().toArray()));
-                break;
             case "/api/addresses":
                 response.setContentType("text/json");
                 response.setHeader("Cache-Control", "no-cache");

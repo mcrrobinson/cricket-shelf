@@ -37,13 +37,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "ORDERS")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Orders.findAll", query = "SELECT o FROM Orders o"),
-    @NamedQuery(name = "Orders.findByOrderId", query = "SELECT o FROM Orders o WHERE o.orderId = :orderId"),
-    @NamedQuery(name = "Orders.findByTotal", query = "SELECT o FROM Orders o WHERE o.total = :total"),
-    @NamedQuery(name = "Orders.findByStatus", query = "SELECT o FROM Orders o WHERE o.status = :status"),
-    @NamedQuery(name = "Orders.findByOrdered", query = "SELECT o FROM Orders o WHERE o.ordered = :ordered"),
-    @NamedQuery(name = "Orders.findByOutForDelivery", query = "SELECT o FROM Orders o WHERE o.outForDelivery = :outForDelivery"),
-    @NamedQuery(name = "Orders.findByDelivered", query = "SELECT o FROM Orders o WHERE o.delivered = :delivered")})
+        @NamedQuery(name = "Orders.findAll", query = "SELECT o FROM Orders o"),
+        @NamedQuery(name = "Orders.findByOrderId", query = "SELECT o FROM Orders o WHERE o.orderId = :orderId"),
+        @NamedQuery(name = "Orders.findByTotal", query = "SELECT o FROM Orders o WHERE o.total = :total"),
+        @NamedQuery(name = "Orders.findByStatus", query = "SELECT o FROM Orders o WHERE o.status = :status"),
+        @NamedQuery(name = "Orders.findByOrdered", query = "SELECT o FROM Orders o WHERE o.ordered = :ordered"),
+        @NamedQuery(name = "Orders.findByOutForDelivery", query = "SELECT o FROM Orders o WHERE o.outForDelivery = :outForDelivery"),
+        @NamedQuery(name = "Orders.findByDelivered", query = "SELECT o FROM Orders o WHERE o.delivered = :delivered") })
 public class Orders implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -76,7 +76,6 @@ public class Orders implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date cancelled;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "orders")
-    @JsonIgnore
     private Collection<OrderHasBook> orderHasBookCollection;
     @JoinColumn(name = "ADDRESS_ID", referencedColumnName = "ADDRESS_ID")
     @ManyToOne(optional = false)
@@ -151,7 +150,7 @@ public class Orders implements Serializable {
     public void setDelivered(Date delivered) {
         this.delivered = delivered;
     }
-    
+
     public Date getCancelled() {
         return cancelled;
     }
@@ -207,7 +206,8 @@ public class Orders implements Serializable {
             return false;
         }
         Orders other = (Orders) object;
-        if ((this.orderId == null && other.orderId != null) || (this.orderId != null && !this.orderId.equals(other.orderId))) {
+        if ((this.orderId == null && other.orderId != null)
+                || (this.orderId != null && !this.orderId.equals(other.orderId))) {
             return false;
         }
         return true;
@@ -217,5 +217,5 @@ public class Orders implements Serializable {
     public String toString() {
         return "entity.Orders[ orderId=" + orderId + " ]";
     }
-    
+
 }
