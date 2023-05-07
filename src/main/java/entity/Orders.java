@@ -206,11 +206,8 @@ public class Orders implements Serializable {
             return false;
         }
         Orders other = (Orders) object;
-        if ((this.orderId == null && other.orderId != null)
-                || (this.orderId != null && !this.orderId.equals(other.orderId))) {
-            return false;
-        }
-        return true;
+        return !((this.orderId == null && other.orderId != null)
+                || (this.orderId != null && !this.orderId.equals(other.orderId))) ;
     }
 
     @Override

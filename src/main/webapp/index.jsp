@@ -12,7 +12,7 @@
 <!-- Anything that doesn't require rendering goes here, anything that does 
 goes in the WEB-INF/view folder. WEB-INF/view/checkout.jsp wont be accessible 
 to the browser -->
-<html>
+<html lang="en">
     <head>
     </head>
     <body>
@@ -58,6 +58,9 @@ to the browser -->
         
         var image = document.createElement("img");
         image.src = 'img/' + book.thumbnail + '.jpg';
+        image.alt = book.title;
+        image.setAttribute("aria-label", book.title);
+        image.setAttribute("aria-labelledby", book.title);
         
         link.appendChild(image);
         
@@ -86,6 +89,9 @@ to the browser -->
         
         var image = document.createElement("img");
         image.src = 'img/' + book.thumbnail + '.jpg';
+        image.alt = book.title;
+        image.setAttribute("aria-label", book.title);
+        image.setAttribute("aria-labelledby", book.title);
         
         link.appendChild(image);
         
