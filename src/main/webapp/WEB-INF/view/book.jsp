@@ -22,7 +22,7 @@
             </form>
             <a href="basket">Basket</a>
             <a href="orders">Orders</a>
-            <a class="logoutButton" href="login">Logout</a>
+            <a class="logoutButton" href="/cricket-shelf/api/logout">Logout</a>
         </div>
         <div class="container">
             <div class="content-md">

@@ -48,3 +48,9 @@ DatabaseName | cricketstore
 
 10. Finish
 11. Ping to check...
+# Create JDBC Resource
+1. Click on JDBC Resources
+2. New...
+3. JNDI Name: jdbc/cricketbooksbean
+4. Pool Name: cricketstore
+5. OK

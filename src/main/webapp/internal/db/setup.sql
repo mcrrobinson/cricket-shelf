@@ -62,6 +62,7 @@ CREATE TABLE ORDERS (
 	ordered TIMESTAMP NOT NULL,
 	out_for_delivery TIMESTAMP,
 	delivered TIMESTAMP,
+	cancelled TIMESTAMP,
 	PRIMARY KEY (order_id)
 );
 

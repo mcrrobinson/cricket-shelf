@@ -5,112 +5,122 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <h1 id="cricket-shelf">cricket-shelf</h1>
-<p>Enterprise Web Architectures Requirements</p>
-<h1 id="create-local-glassfish-server">Create local glassfish server</h1>
-<ol>
-<li>Services</li>
-<li>Servers </li>
-<li>Add Server</li>
-<li>GlassFish Server Open Source Edition 4.1.1 </li>
-<li>Next</li>
-<li>Browse &gt; C:\glassfish4\glassfish\domains\domain1</li>
-<li>Next </li>
-<li>Finish</li>
-<li>Start server</li>
-</ol>
-<h1 id="create-local-database">Create local database</h1>
-<ol>
-<li>Services</li>
-<li>Databases</li>
-<li>Java DB</li>
-<li>Create Database</li>
-<li>Copy paste the following</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Database Name</td>
-<td>cricketstore</td>
-</tr>
-<tr>
-<td>User Name</td>
-<td>root</td>
-</tr>
-<tr>
-<td>Password</td>
-<td>password</td>
-</tr>
-<tr>
-<td>6. OK</td>
-<td></td>
-</tr>
-<tr>
-<td>7. Create the database by executing the code in <code>webpages/internal/db/setup.sql</code></td>
-<td></td>
-</tr>
-</tbody></table>
-<h1 id="create-jdbc-connection-pool">Create JDBC Connection Pool</h1>
-<ol>
-<li>Navigate to <a href="http://localhost:4848">http://localhost:4848</a> </li>
-<li>Resources </li>
-<li>JDBC </li>
-<li>JDBC Connection Pools </li>
-<li>New... </li>
-<li>Pool Name: cricketstore </li>
-<li>Resource Type: javax.sql.DataSource </li>
-<li>Database Driver Vendor: Derby </li>
-<li>Next &gt; Scroll to additional properties</li>
-</ol>
-<p>Copy and paste the following properties:</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>URL</td>
-<td>jdbc:derby://localhost:1527/cricketstore</td>
-</tr>
-<tr>
-<td>User</td>
-<td>root</td>
-</tr>
-<tr>
-<td>Password</td>
-<td>password</td>
-</tr>
-<tr>
-<td>ServerName</td>
-<td>localhost</td>
-</tr>
-<tr>
-<td>PortNumber</td>
-<td>1527</td>
-</tr>
-<tr>
-<td>DatabaseName</td>
-<td>cricketstore</td>
-</tr>
-</tbody></table>
-<ol start="10">
-<li>Finish</li>
-<li>Ping to check...</li>
-</ol>
-
-
-    </body>
+  <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <h1 id="cricket-shelf">cricket-shelf</h1>
+    <p>Enterprise Web Architectures Requirements</p>
+    <h1 id="create-local-glassfish-server">Create local glassfish server</h1>
+    <ol>
+      <li>Services</li>
+      <li>Servers</li>
+      <li>Add Server</li>
+      <li>GlassFish Server Open Source Edition 4.1.1</li>
+      <li>Next</li>
+      <li>Browse &gt; C:\glassfish4\glassfish\domains\domain1</li>
+      <li>Next</li>
+      <li>Finish</li>
+      <li>Start server</li>
+    </ol>
+    <h1 id="create-local-database">Create local database</h1>
+    <ol>
+      <li>Services</li>
+      <li>Databases</li>
+      <li>Java DB</li>
+      <li>Create Database</li>
+      <li>Copy paste the following</li>
+    </ol>
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Database Name</td>
+          <td>cricketstore</td>
+        </tr>
+        <tr>
+          <td>User Name</td>
+          <td>root</td>
+        </tr>
+        <tr>
+          <td>Password</td>
+          <td>password</td>
+        </tr>
+        <tr>
+          <td>6. OK</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>7. Create the database by executing the code in <code>webpages/internal/db/setup.sql</code></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <h1 id="create-jdbc-connection-pool">Create JDBC Connection Pool</h1>
+    <ol>
+      <li>Navigate to <a href="http://localhost:4848">http://localhost:4848</a></li>
+      <li>Resources</li>
+      <li>JDBC</li>
+      <li>JDBC Connection Pools</li>
+      <li>New...</li>
+      <li>Pool Name: cricketstore</li>
+      <li>Resource Type: javax.sql.DataSource</li>
+      <li>Database Driver Vendor: Derby</li>
+      <li>Next &gt; Scroll to additional properties</li>
+    </ol>
+    <p>Copy and paste the following properties:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>URL</td>
+          <td>jdbc:derby://localhost:1527/cricketstore</td>
+        </tr>
+        <tr>
+          <td>User</td>
+          <td>root</td>
+        </tr>
+        <tr>
+          <td>Password</td>
+          <td>password</td>
+        </tr>
+        <tr>
+          <td>ServerName</td>
+          <td>localhost</td>
+        </tr>
+        <tr>
+          <td>PortNumber</td>
+          <td>1527</td>
+        </tr>
+        <tr>
+          <td>DatabaseName</td>
+          <td>cricketstore</td>
+        </tr>
+      </tbody>
+    </table>
+    <ol start="10">
+      <li>Finish</li>
+      <li>Ping to check...</li>
+    </ol>
+    <h1 id="create-jdbc-resource">Create JDBC Resource</h1>
+    <ol>
+      <li>Click on JDBC Resources</li>
+      <li>New...</li>
+      <li>JNDI Name: jdbc/cricketbooksbean</li>
+      <li>Pool Name: cricketstore</li>
+      <li>OK</li>
+    </ol>
+  </body>
 </html>
