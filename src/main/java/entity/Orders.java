@@ -86,7 +86,6 @@ public class Orders implements Serializable {
     private Cards cardId;
     @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")
     @ManyToOne(optional = false)
-    @JsonIgnore
     private Users userId;
 
     public Orders() {

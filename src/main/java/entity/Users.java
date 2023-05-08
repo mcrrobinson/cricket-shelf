@@ -5,6 +5,7 @@
  */
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -89,6 +90,7 @@ public class Users implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     private Collection<BasketHasBook> basketHasBookCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
     private Collection<Orders> ordersCollection;
     @OneToMany(mappedBy = "userId")
     private Collection<Addresses> addressesCollection;

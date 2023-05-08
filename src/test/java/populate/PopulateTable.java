@@ -29,8 +29,7 @@ public class PopulateTable {
                         "('Ultimate Cricket Superstars', '1st', 6.50, 2022, ?)," +
                         "('Crickets Most Legendary International Matches', '1st', 7.99, 2023, ?)," +
                         "('Fatty Batter: How cricket saved my life (then ruined it)', '1st', 12.09, 2008, ?)," +
-                        "('The Cricket Quiz Book: The quintessential quizzing challenge for cricket lovers with over 500 questions', '1st', 4.99, 2022, ?),"
-                        +
+                        "('The Cricket Quiz Book: The quintessential quizzing challenge for cricket lovers with over 500 questions', '1st', 4.99, 2022, ?)," +
                         "('Pushing the Boundaries: Cricket in the Eighties', '1st', 20.00, 2018, ?)");
 
         for (int i = 1; i < 6; i++) {

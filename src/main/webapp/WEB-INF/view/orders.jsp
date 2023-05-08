@@ -419,13 +419,14 @@ pageEncoding="UTF-8"%>
           <thead>
             <tr>
               <th></th>
-              <th></th>
               <th>Order ID</th>
               <th>Total</th>
               <th>Status</th>
               <th>Ordered</th>
               <th>Out for Delivery</th>
               <th>Delivered</th>
+              <th>User Email</th>
+              <th></th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -443,7 +444,7 @@ pageEncoding="UTF-8"%>
           <th>Ordered</th>
           <th>Out for Delivery</th>
           <th>Delivered</th>
-          <th>Cancel</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -550,15 +551,14 @@ pageEncoding="UTF-8"%>
   });
 
   // Refilter the usersTable
-  $('#min, #max').on('change', function () {
-    usersTable.draw(); 
-    <c:choose>
-    <c:when test = "${sessionScope.user.getAdmin()}">
-      allUsersTable.draw(); 
-    </c:when>
-    </c:choose>
-      allUsersTable.draw();
-  });
+  document.getElementById("min").onchange = function () {
+    usersTable.draw();
+    allUsersTable.draw(); 
+  };
+  document.getElementById("max").onchange = function () {
+    usersTable.draw();
+    allUsersTable.draw(); 
+  };
 
   var usersTable = $('#userTable').DataTable({
     ajax: {
@@ -719,13 +719,16 @@ pageEncoding="UTF-8"%>
           },
           {
             type: 'html',
-            target: 3
-          },
-          {
-            type: 'html',
-            target: 4,
+            target: 3,
             render: function (data, type, full, meta) {
               return textToTooltip(data);
+            }
+          },
+          {
+            type: 'unix',
+            target: 4,
+            render: function (data, type, full, meta) {
+              return data ? moment.utc(data, 'x').toISOString() : "";
             }
           },
           {
@@ -743,7 +746,11 @@ pageEncoding="UTF-8"%>
             }
           },
           {
+            type: 'html',
             target: 7,
+          },
+          {
+            target: 8,
             visible: false,
             render: function (data, type, full, meta) {
               let attribute = "";
@@ -824,6 +831,10 @@ pageEncoding="UTF-8"%>
           {
             data: 'delivered',
             title: 'Delivered'
+          },
+          {
+            data: 'userId.emailAddress',
+            title: 'Email',
           },
           {
             data: 'orderHasBookCollection',
