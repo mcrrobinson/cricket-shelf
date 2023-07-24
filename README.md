@@ -1,7 +1,13 @@
 # cricket-shelf
-Enterprise Web Architectures Requirements
 
-# Create local glassfish server
+University of Portsmouth Java Programming Coursework.
+
+# Requirements
+[Read More](Requirements_Document.pdf)
+
+# Setup
+
+## Create local glassfish server
 1. Services
 2. Servers 
 3. Add Server
@@ -11,7 +17,7 @@ Enterprise Web Architectures Requirements
 7. Next 
 8. Finish
 9. Start server
-# Create local database
+## Create local database
 1. Services
 2. Databases
 3. Java DB
@@ -25,7 +31,7 @@ User Name | root
 Password | password
 6. OK
 7. Create the database by executing the code in `webpages/internal/db/setup.sql`
-# Create JDBC Connection Pool
+## Create JDBC Connection Pool
 1. Navigate to http://localhost:4848 
 2. Resources 
 3. JDBC 
@@ -48,7 +54,7 @@ DatabaseName | cricketstore
 
 10. Finish
 11. Ping to check...
-# Create JDBC Resource
+## Create JDBC Resource
 1. Click on JDBC Resources
 2. New...
 3. JNDI Name: jdbc/cricketbooksbean
